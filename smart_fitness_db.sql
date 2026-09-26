@@ -1,5 +1,10 @@
-CREATE DATABASE SmartFitnessDB;
+-- Smart Fitness Centre database (MySQL 8)
+-- Tables, sample data, role-based access control and example queries
+
+CREATE DATABASE IF NOT EXISTS SmartFitnessDB;
 USE SmartFitnessDB;
+
+-- ---------------- Tables ----------------
 
 CREATE TABLE Trainer (
     TrainerID VARCHAR(10) PRIMARY KEY,
@@ -64,6 +69,7 @@ CREATE TABLE Payment (
     FOREIGN KEY (MemberID) REFERENCES Member(MemberID)
 );
 
+-- ---------------- Sample data ----------------
 INSERT INTO Trainer VALUES
 ('T001', 'Namal Perera', 5, '0715634889', '2020-01-02'),
 ('T002', 'Sampath', 3, '0729566543', '2022-06-05'),
@@ -110,72 +116,4 @@ INSERT INTO Nutrition VALUES
 
 INSERT INTO Payment VALUES
 ('PAY001', 'M001', 5000.00, 'Cash', '2023-06-01', 'Paid'),
-('PAY002', 'M002', 4500.00, 'Card', '2024-06-06', 'Paid'),
-('PAY003', 'M003', 5000.00, 'Online', '2020-02-10', 'Paid'),
-('PAY004', 'M004', 3500.00, 'Cash', '2018-09-05', 'Unpaid'),
-('PAY005', 'M005', 4000.00, 'Online', '2025-02-05', 'Paid');
-
-CREATE ROLE 'trainer_role';
-CREATE ROLE 'member_role';
-
-GRANT SELECT ON SmartFitnessDB.Member To 'trainer_role';
-GRANT SELECT ON SmartFitnessDB.Session To 'trainer_role';
-GRANT SELECT ON SmartFitnessDB.Nutrition TO 'trainer_role';
-
-GRANT SELECT ON SmartFitnessDB.Payment TO 'member_role';
-GRANT SELECT ON SmartFitnessDB.Plan TO 'member_role';
-GRANT SELECT ON SmartFitnessDB.MemberPlan TO 'member_role';
-GRANT SELECT ON SmartFitnessDB.Session TO 'member_role';
-GRANT SELECT ON SmartFitnessDB.Trainer TO 'member_role';
-
-CREATE USER 'trainer1'@'localhost' IDENTIFIED BY 'trainerpass';
-CREATE USER 'member1'@'localhost' IDENTIFIED BY 'memberpass';
-
-SELECT user, host FROM mysql.user WHERE user = 'member1';
-DROP USER 'member1'@'localhost';
-
-GRANT trainer_role TO 'trainer1'@'localhost';
-GRANT member_role TO 'member1'@'localhost';
-CREATE USER 'member1'@'localhost' IDENTIFIED BY 'memberpass';
-
-SELECT MemberID, MemberName, MembershipType, JoinDate
-FROM Member
-Where TrainerID = 'T001';
-
-SELECT S.SessionID, M.MemberName, S.SessionDate, S.SessionType
-FROM Session S
-JOIN Member M ON S.MemberID = M.MemberID
-WHERE S.TrainerID = 'T002';
-
-SELECT N.NutritionPlanID, M.MemberName, N.DietDetails, N.StartDate, N.EndDate
-FROM Nutrition N 
-JOIN Member M on N.MemberID = M.MemberID
-WHERE M.TrainerID = 'T003';
-
-SELECT PaymentID, Amount, Method, PayDate, PayStatus
-FROM Payment
-WHERE MemberID = 'M001';
-
-SELECT P.PlanName, P.Price
-FROM MemberPlan MP
-JOIN Plan P ON MP.PlanID = P.PlanID
-WHERE MP.MemberID = 'M003';
-
-SELECT S.SessionID, S.SessionDate, S.SessionType, T.TrainerName
-FROM Session S
-JOIN Trainer T ON S.TrainerID = T.TrainerID
-WHERE S.MemberID = 'M002';
-
-SELECT M.MemberName, T.TrainerName, T.TrainerContact, T.Experience
-FROM Member M 
-JOIN Trainer T ON M.TrainerID = T.TrainerID
-WHERE M.MemberID = 'M005';
-
-show tables;
-
-select *
-from trainer;
-
-select *
-from session
-
+('PAY002', 'M002', 4500.00,
